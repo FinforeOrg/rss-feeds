@@ -1,0 +1,71 @@
+a.button, button {
+  display:block;
+  float:left;
+  margin: 0.7em 0.5em 0.7em 0;
+  padding:5px 10px 5px 7px;   /* Links */
+  
+  border:1px solid #dedede;
+  border-top:1px solid #eee;
+  border-left:1px solid #eee;
+
+  background-color:#f5f5f5;
+  font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size:100%;
+  line-height:130%;
+  text-decoration:none;
+  font-weight:bold;
+  color:#565656;
+  cursor:pointer;
+}
+
+button img, a.button img{
+  margin:0 3px -3px 0 !important;
+  padding:0;
+  border:none;
+  width:16px;
+  height:16px;
+  float:none;
+}
+
+
+.button {
+
+  text-decoration: none;
+  color: white !important;
+/*  font-size: 18px;*/
+  font-family: arial, sans serif;
+/*  padding: 11px 35px 11px 35px;*/
+  padding: 3px 11px;
+  border: 1px solid rgb(120,120,120) !important;
+  background: rgb(82,178,214) !important;
+  text-shadow: 0px 1px 0px rgb(67,137,167);
+  -moz-border-radius: 3px;
+  Border-radius: 3px;
+}
+
+.button:hover {
+
+  cursor: pointer;
+  border: 1px solid rgb(130,130,130) !important;
+
+  /*For browers that don't support gradients*/
+  background: rgb(105,188,220) !important;
+
+  /*For Google Chrome and Safari*/
+  background: -webkit-gradient(linear, left top, left bottom, from(#82C7E1), to(#5AB6D8));
+
+  /*For Firefox*/
+  background: -moz-linear-gradient(top, #82C7E1, #5AB6D8);
+}
+
+.button:active {
+  background: rgb(54,165,207);
+
+  /*For Google Chrome and Safari*/
+  background: -webkit-gradient(linear, left top, left bottom, from(#5AB6D8), to(#82C7E1));
+
+  /*For Firefox*/
+  background: -moz-linear-gradient(top, #5AB6D8, #82C7E1);
+}
+
+.button-hidden { display: none; }
