@@ -28,6 +28,18 @@ $sysmenu = array(
 //            ),
 //        )
 //    ),
+    'RSSFEEDS' => array(
+        'name' => "RSS Feeds",
+        'link' => "rssfeeds.php",
+        'rights' => ADMIN,
+        'submenu' => array(
+            'RSSFEEDS' => array(
+                'name' => "RSS Feeds",
+                'link' => "rssfeeds.php",
+                'rights' => ADMIN,
+            ),
+        )
+    ),
     'ADMINMANAGEMENT' => array(
         'name' => "Administrators",
         'link' => "admins.php",
