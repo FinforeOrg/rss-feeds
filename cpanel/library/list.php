@@ -353,7 +353,7 @@ class CList
         }
         ?>
         <form id="list" method="post" name="FRM_LIST" action="<?= $url ?>">
-            <input type="Hidden" name="ls_action" value="0">
+            <input type="hidden" name="ls_action" value="0">
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <caption><?= $this->m_sTitle; ?> - <?php echo $this->m_nTotalRecords ?> found</caption>
                 <?php $this->ShowListContent(); ?>
@@ -397,7 +397,7 @@ class CList
                                 else
                                     echo "<img src='images/btnMinusGray.gif' border='0'>";
                                 ?>
-                                <input class="listnav" type="text" size="10" name="page" value="<?= $this->m_nCurrentPage + 1 ?>"> / <?= $this->m_nTotalPages + 1 ?>
+                                <input type="text" size="10" name="page" value="<?= $this->m_nCurrentPage + 1 ?>"> / <?= $this->m_nTotalPages + 1 ?>
                                 <input type="submit" value="Go" class="button" />
                                 <?
                                 if ($this->m_nCurrentPage != $this->m_nTotalPages)

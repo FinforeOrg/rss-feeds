@@ -54,7 +54,7 @@ else {
                 <tr>
                     <td>
                         <label>ID</label> <br />
-                        <input class="listnav" name="flt_id" value="<?= isset($_GET['flt_id']) ? $_GET['flt_id'] : "" ?>" />
+                        <input type="text" name="flt_id" value="<?= isset($_GET['flt_id']) ? $_GET['flt_id'] : "" ?>" />
                     </td>
                     <td>
                         <input class="button" type="submit" value="Filter" />

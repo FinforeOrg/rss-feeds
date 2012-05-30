@@ -89,7 +89,7 @@ else {
                 <tr>
                     <td>
                         <label>ID</label> <br />
-                        <input class="listnav" name="f_id" value="<?= isset($_GET['f_id']) ? $_GET['f_id'] : "" ?>" />
+                        <input type="text" name="f_id" value="<?= isset($_GET['f_id']) ? $_GET['f_id'] : "" ?>" />
                     </td>
                     <td>
                         <input class="button" type="submit" value="Filter" />

@@ -21,8 +21,8 @@ class CUsers extends CList
         );
 
         $delim = "";
-        if (isset($_GET['flt_id']) && intval($_GET['flt_id']) > 0) {
-            $this->m_sFilter.= $delim . "h.id=" . intval($_GET['flt_id']);
+        if (isset($_GET['f_url']) && intval($_GET['f_url']) > 0) {
+            $this->m_sFilter.= $delim . "mu.url LIKE '%" . intval($_GET['f_url'])."%'";
             $delim = " and ";
         }
 
@@ -67,8 +67,8 @@ else {
             <table>
                 <tr>
                     <td>
-                        <label>ID</label> <br />
-                        <input class="listnav" name="flt_id" value="<?= isset($_GET['flt_id']) ? $_GET['flt_id'] : "" ?>" />
+                        <label>URL (all or part of it)</label> <br />
+                        <input type="text" class="span-7" name="f_url" value="<?= isset($_GET['f_url']) ? $_GET['f_url'] : "" ?>" />
                     </td>
                     <td>
                         <input class="button" type="submit" value="Filter" />

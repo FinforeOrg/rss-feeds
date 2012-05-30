@@ -77,13 +77,13 @@ else {
                             <tr>
                                 <td class="ROW1">
                                     <label>Username</label>
-                                    <input class="listnav" name="flt_username" value="<?= isset($_GET['flt_username']) ? $_GET['flt_username'] : "" ?>"></td>
+                                    <input type="text" name="flt_username" value="<?= isset($_GET['flt_username']) ? $_GET['flt_username'] : "" ?>"></td>
                                 <td class="ROW1">
                                     <label>First name</label>
-                                    <input class="listnav" name="flt_fname" value="<?= isset($_GET['flt_fname']) ? $_GET['flt_fname'] : "" ?>"></td>
+                                    <input type="text" name="flt_fname" value="<?= isset($_GET['flt_fname']) ? $_GET['flt_fname'] : "" ?>"></td>
                                 <td class="ROW1">
                                     <label>Last name</label>
-                                    <input class="listnav" name="flt_lname" value="<?= isset($_GET['flt_lname']) ? $_GET['flt_lname'] : "" ?>"></td>
+                                    <input type="text" name="flt_lname" value="<?= isset($_GET['flt_lname']) ? $_GET['flt_lname'] : "" ?>"></td>
                                 <td class="ROW1">
                                     <label>Status</label>
                                     <select name="flt_status" class="listnav">
