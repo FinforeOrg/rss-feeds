@@ -1,6 +1,7 @@
 SELECT 
 	su.id
 	,COALESCE(mc.name,'') AS 'Source Category' 
+	,GROUP_CONCAT(DISTINCT COALESCE(mc.name,'')) AS source_categories
 	,GROUP_CONCAT(DISTINCT mc.tag) AS 'Tags'	
 	
 	, mu.domain AS 'Source Domain' 

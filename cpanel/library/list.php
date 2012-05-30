@@ -865,7 +865,7 @@ class CList
                                         echo "<input " . ($disabled ? "disabled" : "") . " type='checkbox' value='1' name='" . $this->m_aColumns[$i]->m_sDBName . "' " . (isset($row->{$this->m_aColumns[$i]->m_sDBName}) && $row->{$this->m_aColumns[$i]->m_sDBName} > 0 ? "checked" : "") . ">";
                                         break;
                                     case CT_COMBO:
-                                        echo "<select " . ($disabled ? "disabled" : "") . " name='" . $this->m_aColumns[$i]->m_sDBName . "'>";
+                                        echo "<select " . ($disabled ? "disabled" : "") . " name='" . $this->m_aColumns[$i]->m_sDBName . "' style='width: 100%;'>";
                                         echo "<option value='-1'>None";
                                         $this->FillListSelect($i, isset($row->{$this->m_aColumns[$i]->m_sDBName}) ? $row->{$this->m_aColumns[$i]->m_sDBName} : $this->m_aColumns[$i]->m_iDefaultValue);
                                         echo "</select>";

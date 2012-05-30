@@ -10,11 +10,9 @@ class CUsers extends CList
         global $_GET, $_COOKIE;
 
         $this->AddColumn("ID", 'id', CL_VIEW_GRID | CL_VIEW_READONLYEDIT);
-        $this->AddColumn("URL ID", 'scrape_url_id', CL_VIEW_EDIT);
-        $this->AddColumn("URL", 'scrape_url_url', CL_VIEW_GRID);
+        $this->AddColumn("Feed URL ID", 'scrape_url_id', CL_VIEW_EDIT);
+        $this->AddColumn("Feed URL", 'scrape_url_url', CL_VIEW_GRID);
         $this->AddColumn("Title", 'scrape_url_title', CL_VIEW_GRID);
-//        $this->AddColumn("Main Category Name", 'main_category_name', CL_VIEW_GRID | CL_VIEW_EDIT);
-//        $this->AddColumn("URL Type", 'scrape_category_name', CL_VIEW_GRID | CL_VIEW_EDIT);
         
         $this->AddComboColumn(
                 "Main Category Name"

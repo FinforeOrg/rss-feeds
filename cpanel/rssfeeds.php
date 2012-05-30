@@ -13,11 +13,27 @@ class CObject extends CList
 //        $this->AddColumn("Source Category", 'source_category', CL_VIEW_GRID);
         $this->AddColumn("Source Categories", 'source_categories', CL_VIEW_GRID);
         $this->AddColumn("Tags", 'tags', CL_VIEW_GRID);
+
         $this->AddColumn("Source Domain", 'source_domain', CL_VIEW_GRID);
-        $this->AddColumn("Source URL", 'source_url', CL_VIEW_GRID);
+//        $this->AddColumn("Source URL", 'source_url', CL_VIEW_GRID);
+        $this->AddComboColumn(
+                "Source URL"
+                , "url_id"
+                , "source_url"
+                , "SELECT
+                    mu.id AS `value`
+                    , CONCAT(mc.name, ' - ', url) AS `text` 
+                FROM main_url mu 
+                INNER JOIN main_category mc ON mc.id = category_id
+                ORDER BY mc.name ASC"
+                , CT_COMBO, CL_VIEW_GRID | CL_VIEW_EDIT, false
+        );
         $this->AddColumn("Feed Type", 'feed_type', CL_VIEW_GRID);
-        $this->AddColumn("Feed URL", 'feed_url', CL_VIEW_GRID);
-        $this->AddColumn("Feed Title", 'feed_title', CL_VIEW_GRID);
+
+        $this->AddColumn("Feed URL", 'url', CL_VIEW_GRID | CL_VIEW_EDIT);
+        $this->AddColumn("Feed Title", 'title', CL_VIEW_GRID | CL_VIEW_EDIT);
+
+
         $this->AddColumn("Options", 'options', CL_VIEW_GRID);
 
         $delim = "";
@@ -68,18 +84,21 @@ EOT;
         $this->m_sSelectSQL = "
 SELECT 
 	su.id
+	,su.url
+	,su.title
+    
+    ,sut.twitter_id AS twitter_id
+    
 	,COALESCE(mc.name,'') AS source_category
 	,GROUP_CONCAT(DISTINCT COALESCE(mc.name,'')) AS source_categories
 	,GROUP_CONCAT(DISTINCT mc.tag) AS tags
+    
+	, mu.id AS source_url_id 
 	, mu.domain AS source_domain
 	, mu.url AS source_url 
-    
-    , sut.twitter_id AS twitter_id
 	
 	, sc.name AS feed_type
     , GROUP_CONCAT(DISTINCT sc.name) AS feed_types
-	, su.url AS feed_url
-	, su.title AS feed_title
 FROM scrape_url su
 INNER JOIN scrape_url_category suc ON suc.scrape_url_id = su.id
 INNER JOIN scrape_category sc ON sc.id = suc.scrape_category_id
