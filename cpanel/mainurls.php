@@ -21,8 +21,13 @@ class CUsers extends CList
         );
 
         $delim = "";
-        if (isset($_GET['f_url']) && intval($_GET['f_url']) > 0) {
-            $this->m_sFilter.= $delim . "mu.url LIKE '%" . intval($_GET['f_url'])."%'";
+        if (isset($_GET['f_url']) && strlen($_GET['f_url'])) {
+            $this->m_sFilter.= $delim . "mu.url LIKE '%" . $_GET['f_url']."%'";
+            $delim = " and ";
+        }
+
+        if (isset($_GET['f_cat']) && intval($_GET['f_cat']) > 0) {
+            $this->m_sFilter.= $delim . "mc.id = " . intval($_GET['f_cat'])."";
             $delim = " and ";
         }
 
@@ -69,6 +74,13 @@ else {
                     <td>
                         <label>URL (all or part of it)</label> <br />
                         <input type="text" class="span-7" name="f_url" value="<?= isset($_GET['f_url']) ? $_GET['f_url'] : "" ?>" />
+                    </td>
+                    <td>
+                        <label>Category</label> <br />
+                        <select name="f_cat">
+                            <option value="-1">Any</option>
+                            <?php FillCombo("SELECT id AS `value`, `name` AS `text` FROM main_category ORDER BY `name`;", intval(Get("f_cat"))); ?>
+                        </select>
                     </td>
                     <td>
                         <input class="button" type="submit" value="Filter" />

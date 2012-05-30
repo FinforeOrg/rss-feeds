@@ -14,8 +14,8 @@ class CUsers extends CList
         $this->AddColumn("Tag", 'tag', CL_VIEW_GRID | CL_VIEW_EDIT);
 
         $delim = "";
-        if (isset($_GET['flt_id']) && intval($_GET['flt_id']) > 0) {
-            $this->m_sFilter.= $delim . "h.id=" . intval($_GET['flt_id']);
+        if (isset($_GET['flt_name']) && strlen($_GET['flt_name']) > 0) {
+            $this->m_sFilter.= $delim . " (name like '%" . ($_GET['flt_name'])."%' OR tag like '%" . ($_GET['flt_name'])."%')";
             $delim = " and ";
         }
 
@@ -53,8 +53,8 @@ else {
             <table>
                 <tr>
                     <td>
-                        <label>ID</label> <br />
-                        <input type="text" name="flt_id" value="<?= isset($_GET['flt_id']) ? $_GET['flt_id'] : "" ?>" />
+                        <label>Name or Tag</label> <br />
+                        <input type="text" class="span-7" name="flt_name" value="<?= isset($_GET['flt_name']) ? $_GET['flt_name'] : "" ?>" />
                     </td>
                     <td>
                         <input class="button" type="submit" value="Filter" />
