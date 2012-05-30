@@ -2,124 +2,122 @@
 require_once "library/include.php";
 require_once "modules/GeoIP/functions.php";
 
-class CUsers extends CList
+class CObject extends CList
 {
 
     function InitiliseList()
     {
-        global $_GET, $_COOKIE;
+        global $_GET, $_COOKIE, $g_oConn;
 
         $this->AddColumn("ID", 'id', CL_VIEW_GRID | CL_VIEW_READONLYEDIT);
-
-        $this->AddColumn("Username", 'username', CL_VIEW_GRID | CL_VIEW_EDIT, CT_STRING, 1);
-        $this->AddColumn("Password", 'password', CL_VIEW_EDIT, CT_PASSWORD);
-
-        $this->AddColumn("Email", 'email_address', CL_VIEW_GRID | CL_VIEW_EDIT, CT_STRING, 1);
-
-        $this->AddColumn("Name", 'name', CL_VIEW_GRID);
-        $this->AddColumn("Jobs", 'jobs_count', CL_VIEW_GRID);
-
-
-        $this->AddColumn("First Name", 'first_name', CL_VIEW_EDIT, CT_STRING, 1, 31);
-        $this->AddColumn("Last Name", 'last_name', CL_VIEW_EDIT, CT_STRING, 1, 31);
-
-        $this->AddColumn("Login & Register Info", 'login_register', CL_VIEW_GRID, CT_STRING);
-
-        $this->AddColumn("Active?", 'is_active', CL_VIEW_GRID, CT_CHECKBOX);
-
-        $this->AddColumn("Address", 'address', CL_VIEW_EDIT, CT_STRING, 0, 255);
-        $this->AddColumn("City", 'city', CL_VIEW_EDIT, CT_STRING, 0, 255);
-        $this->AddColumn("Zip", 'zip', CL_VIEW_EDIT, CT_STRING, 0, 255);
-
-        $this->AddColumn("Phone", 'mobile_number', CL_VIEW_GRID | CL_VIEW_EDIT, CT_STRING, 0, 31);
-
-        $this->AddColumn("Referral URL", 'referrer', CL_VIEW_GRID | CL_VIEW_EDIT, CT_STRING);
+//        $this->AddColumn("Source Category", 'source_category', CL_VIEW_GRID);
+        $this->AddColumn("Source Categories", 'source_categories', CL_VIEW_GRID);
+        $this->AddColumn("Tags", 'tags', CL_VIEW_GRID);
+        $this->AddColumn("Source Domain", 'source_domain', CL_VIEW_GRID);
+        $this->AddColumn("Source URL", 'source_url', CL_VIEW_GRID);
+        $this->AddColumn("Feed Type", 'feed_type', CL_VIEW_GRID);
+        $this->AddColumn("Feed URL", 'feed_url', CL_VIEW_GRID);
+        $this->AddColumn("Feed Title", 'feed_title', CL_VIEW_GRID);
+        $this->AddColumn("Options", 'options', CL_VIEW_GRID);
 
         $delim = "";
-        if (isset($_GET['flt_id']) && intval($_GET['flt_id']) > 0) {
-            $this->m_sFilter.= $delim . "h.id=" . intval($_GET['flt_id']);
-            $delim = " and ";
-        }
-        if (isset($_GET['flt_email']) && strlen($_GET['flt_email']) > 0) {
-            $this->m_sFilter.= $delim . "h.email_address like '%" . $_GET['flt_email'] . "%'";
-            $delim = " and ";
-        }
-        if (isset($_GET['flt_uname']) && strlen($_GET['flt_uname']) > 0) {
-            $this->m_sFilter.= $delim . "h.username like '%" . $_GET['flt_uname'] . "%'";
-            $delim = " and ";
-        }
-        if (isset($_GET['flt_fname']) && strlen($_GET['flt_fname']) > 0) {
-            $this->m_sFilter.= $delim . "h.first_name like '%" . $_GET['flt_fname'] . "%'";
-            $delim = " and ";
-        }
-        if (isset($_GET['flt_lname']) && strlen($_GET['flt_lname']) > 0) {
-            $this->m_sFilter.= $delim . "h.lasts_name like '%" . $_GET['flt_lname'] . "%'";
+        if (isset($_GET['f_id']) && intval($_GET['f_id']) > 0) {
+            $this->m_sFilter.= $delim . "h.id=" . intval($_GET['f_id']);
             $delim = " and ";
         }
 
-        $this->m_sSelectSQL = "SELECT h.*, COUNT(j.id) AS jobs_count
-                           FROM homeowner h
-                           INNER JOIN job j ON j.homeowner_id = h.id";
+        if (isset($_GET["f_feed_type"]) && is_array($_GET["f_feed_type"])) {
+            $this->m_sFilter.= $delim . "sc.id IN (" . implode(",", $_GET['f_feed_type']) . ")";
+            $delim = " and ";
+        }
 
-        $this->m_sCountSQL = "SELECT COUNT(*) FROM homeowner";
+        // search query
+        $query = Get("f_q");
+        $region_ids_string = "";
+        $join_region_tables = "";
+        if (strlen($query)) {
+            $query = str_replace("OR", "__#__", $query);
+            $words = explode("__#__", $query);
+            // trim array values
+            array_walk($words, create_function('&$val', '$val = trim($val);'));
+            $sql = "SELECT GROUP_CONCAT(DISTINCT id) FROM country_region WHERE `name` IN ('" . implode("','", $words) . "');";
+            $region_ids_string = $g_oConn->GetValue($sql);
 
-        $this->m_sTableName = 'homeowner';
-        $this->m_sTitle = "Homeowners";
-        $this->m_sActionURL = "homeowners.php";
-        $this->m_sGroupBy = "h.id";
+            $join_region_tables = <<<EOT
+INNER JOIN (
+    SELECT
+    cr4.name
+    # World
+    FROM country_region cr1
+    # Continent
+    INNER JOIN country_region cr2 ON cr1.id = cr2.parent_region_id AND cr2.other_region = 0
+    # Region
+    INNER JOIN country_region cr3 ON cr2.id = cr3.parent_region_id AND cr3.other_region = 0
+    # Country
+    INNER JOIN country_region cr4 ON cr3.id = cr4.parent_region_id AND cr4.other_region = 0
+    WHERE
+        cr4.id IN ({$region_ids_string})
+        OR cr4.parent_region_id IN ({$region_ids_string})
+        OR cr3.parent_region_id IN ({$region_ids_string})
+        OR cr2.parent_region_id IN ({$region_ids_string})
+        OR cr1.parent_region_id IN ({$region_ids_string})
+) AS rn on rn.name = mc.name
+EOT;
+        }
+
+        $this->m_sSelectSQL = "
+SELECT 
+	su.id
+	,COALESCE(mc.name,'') AS source_category
+	,GROUP_CONCAT(DISTINCT COALESCE(mc.name,'')) AS source_categories
+	,GROUP_CONCAT(DISTINCT mc.tag) AS tags
+	, mu.domain AS source_domain
+	, mu.url AS source_url 
+    
+    , sut.twitter_id AS twitter_id
+	
+	, sc.name AS feed_type
+    , GROUP_CONCAT(DISTINCT sc.name) AS feed_types
+	, su.url AS feed_url
+	, su.title AS feed_title
+FROM scrape_url su
+INNER JOIN scrape_url_category suc ON suc.scrape_url_id = su.id
+INNER JOIN scrape_category sc ON sc.id = suc.scrape_category_id
+LEFT JOIN main_url mu ON mu.id = su.url_id
+LEFT JOIN main_category mc ON mc.id = suc.main_category_id
+LEFT JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id
+" . $join_region_tables . "
+";
+
+        $this->m_sCountSQL = "SELECT COUNT(DISTINCT su.id)
+	FROM scrape_url su
+	INNER JOIN scrape_url_category suc ON suc.scrape_url_id = su.id
+	INNER JOIN scrape_category sc ON sc.id = suc.scrape_category_id
+	LEFT JOIN main_url mu ON mu.id = su.url_id
+	LEFT JOIN main_category mc ON mc.id = suc.main_category_id
+	LEFT JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id
+    " . $join_region_tables . "
+    ";
+
+        $this->m_sTableName = 'scrape_url';
+        $this->m_sTitle = "RSS Feeds";
+        $this->m_sActionURL = "rssfeeds.php";
+        $this->m_sGroupBy = "su.id";
+        $this->m_sOrderBy = "IF(ISNULL(mc.name),1,0), mc.name, mu.id";
+        $this->m_nPageSize = 50;
 //    $this->m_nOperation = OP_EDIT | OP_ADD;
     }
 
     function GetCellEntry($dbname, $value, &$rs, $column)
     {
-        if ($dbname == "username") {
-            // Auto-login button
-            $return = <<<EOF
-{$value} <hr />
-<a href="javascript:;"
-  onclick="
-  document.autoLoginForm.email_address.value='{$rs->GetItem("username")}';
-  document.autoLoginForm.password.value='{$rs->GetItem("password")}';
-  document.autoLoginForm.submit();"><img src='images/lock.png' class='comm-img' alt='Auto-login' title='Auto-login' /></a>
-EOF;
-
-            return $return;
+        if ($dbname == "options") {
+            $value.= " <a href='urlcategories.php?f_id=" . $rs->GetItem("id") . "'><img src='images/tag--pencil.png' border=0 alt='Categories and tags' title='Categories and tags' /></a>";
+            if ($rs->GetItem("twitter_id"))
+                $value.= " <a href='twitterfeeds.php?f_id=" . $rs->GetItem("id") . "'><img src='images/twitter.png' border=0 alt='Twitter details' title='Twitter details' /></a>";
         }
 
-        if ($dbname == "login_register") {
-            $register_ip = IpCheckingLink($rs->GetItem("register_ip"));
-            $lastlogin_ip = IpCheckingLink($rs->GetItem("last_login_ip"));
-
-            $sRegisterCountyName = getCountryNameByIP($rs->GetItem("register_ip"));
-            $sRegisterCountyCode = getCountryCodeByIP($rs->GetItem("register_ip"));
-            $sRegisterIcon = strlen($sRegisterCountyCode) ? "<img src='images/icons/" . strtolower($sRegisterCountyCode) . ".png' border='0' title='" . $sRegisterCountyCode . "'>&nbsp;" : "";
-
-            $sLoginCountyName = getCountryNameByIP($rs->GetItem("last_login_ip"));
-            $sLoginCountyCode = getCountryCodeByIP($rs->GetItem("last_login_ip"));
-            $sLoginIcon = strlen($sLoginCountyCode) ? "<img src='images/icons/" . strtolower($sLoginCountyCode) . ".png' border='0' title='" . $sLoginCountyCode . "'>&nbsp;" : "";
-
-
-            $value = <<<EOT
- <div style="width: 200px;">Register Date: {$rs->GetItem("created_at")} </div>
- <div style="width: 200px;">Register IP: {$register_ip} {$sRegisterIcon} </div>
- Last Login Date: {$rs->GetItem("last_login")} <br />
- Last Login IP: {$lastlogin_ip} {$sLoginIcon}<br />
-EOT;
-            return $value;
-        }
-
-        if ($dbname == "name") {
-            return $rs->GetItem("first_name") . " " . $rs->GetItem("last_name");
-        }
-        if ($dbname == "jobs_count") {
-            return "<a href='jobs.php?flt_homeowner=" . $rs->GetItem("id") . "'>" . $value . "</a>";
-        }
-
-        if ($dbname == "referrer") {
-            $html = <<<EOF
-<textarea style="font-size: 12px; width: 200px; height: 50px;" readonly onclick="this.focus(); this.select();">{$value}</textarea>
-EOF;
-            return $html;
+        if ($dbname == "source_categories") {
+            
         }
 
         return $value;
@@ -127,38 +125,32 @@ EOF;
 
 }
 
-$list = new CUsers();
-StartPage('HOMEOWNERMENU', 'HOMEOWNERS');
+$list = new CObject();
+StartPage('FEEDS', 'RSSFEEDS');
 if (isset($_GET['action']) && $_GET['action'] == 'edit')
     $list->ShowEditPage();
 else {
-    ShowMenu('HOMEOWNERMENU', 'HOMEOWNERS');
+    ShowMenu('FEEDS', 'RSSFEEDS');
     ?>
     <div class="span-20">
-        <form method="get" action="homeowners.php">
+        <form method="get" action="rssfeeds.php">
             <table>
                 <tr>
-                    <td>
-                        <label>ID</label> <br />
-                        <input class="listnav" name="flt_id" value="<?= isset($_GET['flt_id']) ? $_GET['flt_id'] : "" ?>" />
+                    <td class="span-2">
+                        <label>Feed Type</label> <br />
+                        <?php
+                        FillCheckbox("SELECT id, `name` FROM scrape_category ORDER BY id;"
+                                , isset($_GET["f_feed_type"]) && is_array($_GET["f_feed_type"]) ? $_GET["f_feed_type"] : array()
+                                , 1
+                                , "f_feed_type"
+                        );
+                        ?>
                     </td>
-                    <td>
-                        <label>Username</label> <br />
-                        <input class="listnav" name="flt_uname" value="<?= isset($_GET['flt_uname']) ? $_GET['flt_uname'] : "" ?>" />
+                    <td class="span-2">
+                        <label>Query (world, continent, region, country)</label> <br />
+                        <input type="text" name="f_q" id="f_q" value="<?php echo Get("f_q") ?>" class="span-7" /> <br />
+                        Note: use "OR" to combine search terms
                     </td>
-                    <td>
-                        <label>Email</label> <br />
-                        <input class="listnav" name="flt_email" value="<?= isset($_GET['flt_email']) ? $_GET['flt_email'] : "" ?>" />
-                    </td>
-                    <td>
-                        <label>First name</label> <br />
-                        <input class="listnav" name="flt_fname" value="<?= isset($_GET['flt_fname']) ? $_GET['flt_fname'] : "" ?>" />
-                    </td>
-                    <td>
-                        <label>Last name</label> <br />
-                        <input class="listnav" name="flt_lname" value="<?= isset($_GET['flt_lname']) ? $_GET['flt_lname'] : "" ?>" />
-                    </td>
-
                     <td>
                         <input class="button" type="submit" value="Filter" />
                     </td>
@@ -167,14 +159,6 @@ else {
         </form>
     </div>
     <div class="clear"></div>
-
-    <form name="autoLoginForm" target="_blank" method="post" action="<?php echo $HTTPURL . typo3Url("login.php") ?>">
-        <input type="hidden" name="autologin" value="1">
-        <input type="hidden" name="do" value="1">
-        <input type="hidden" name="email_address" value="">
-        <input type="hidden" name="password" value="">
-    </form>
-
 
     <?php
     $list->ShowListPage();

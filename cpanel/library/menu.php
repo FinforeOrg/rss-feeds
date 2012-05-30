@@ -28,14 +28,34 @@ $sysmenu = array(
 //            ),
 //        )
 //    ),
-    'RSSFEEDS' => array(
-        'name' => "RSS Feeds",
+    'FEEDS' => array(
+        'name' => "Feeds",
         'link' => "rssfeeds.php",
         'rights' => ADMIN,
         'submenu' => array(
             'RSSFEEDS' => array(
                 'name' => "RSS Feeds",
                 'link' => "rssfeeds.php",
+                'rights' => ADMIN,
+            ),
+            'TWITTERFEEDS' => array(
+                'name' => "Twitter Feeds",
+                'link' => "twitterfeeds.php",
+                'rights' => ADMIN,
+            ),
+            'MAINCATEGORIES' => array(
+                'name' => "Main Categories",
+                'link' => "maincategories.php",
+                'rights' => ADMIN,
+            ),
+            'MAINURLS' => array(
+                'name' => "Main URLs",
+                'link' => "mainurls.php",
+                'rights' => ADMIN,
+            ),
+            'URLCATEGORIES' => array(
+                'name' => "URL Categories and Tags",
+                'link' => "urlcategories.php",
                 'rights' => ADMIN,
             ),
         )

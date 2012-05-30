@@ -17,30 +17,27 @@ require_once dirname(__FILE__) . '/lib/include.php';
 
 echo "\nStarting...";
 
-if (!$g_oConn->GetValue("SELECT GET_LOCK('rss_feeds.scrape_url_twitter',3);"))
-{
-  echo "\nTable is locked. Other process is using it.";
-  echo "\nExitting.";
-  exit;
+if (!$g_oConn->GetValue("SELECT GET_LOCK('rss_feeds.scrape_url_twitter',3);")) {
+    echo "\nTable is locked. Other process is using it.";
+    echo "\nExitting.";
+    exit;
 }
 
 # check rate limit first
 $remaining_hits = 0;
 $reset_time_in_seconds = 0;
 $rs = new CRecordset("SELECT * FROM twitter_rate_limit_status WHERE id = 1;");
-if ($rs->MoveNext())
-{
-  $remaining_hits = $rs->GetItem("remaining_hits");
-  $reset_time_in_seconds = $rs->GetItem("reset_time_in_seconds");
+if ($rs->MoveNext()) {
+    $remaining_hits = $rs->GetItem("remaining_hits");
+    $reset_time_in_seconds = $rs->GetItem("reset_time_in_seconds");
 }
 
 // rate limit has not expired yet
-if ($reset_time_in_seconds > time() && $remaining_hits <= 0)
-{
-  echo "\nRate Limit will expire at: ". date("Y-m-d H:i:s", $reset_time_in_seconds);
-  echo "\nExiting now.";
-  $g_oConn->GetValue("SELECT RELEASE_LOCK('rss_feeds.scrape_url_twitter');");
-  exit;
+if ($reset_time_in_seconds > time() && $remaining_hits <= 0) {
+    echo "\nRate Limit will expire at: " . date("Y-m-d H:i:s", $reset_time_in_seconds);
+    echo "\nExiting now.";
+    $g_oConn->GetValue("SELECT RELEASE_LOCK('rss_feeds.scrape_url_twitter');");
+    exit;
 }
 
 //echo "\ntime: ".time();
@@ -60,65 +57,62 @@ ORDER BY id;";
 
 $rs = new CRecordset($sql);
 $i = 0;
-while ($rs->MoveNext() && $remaining_hits > 0)
-{
-  $twitter_username = $rs->GetItem("url");
-  $twitter_username = str_replace("http://twitter.com/#!/", "", $twitter_username);
-  $twitter_username = str_replace("https://twitter.com/#!/", "", $twitter_username);
-  //
-  $twitter_username = str_replace("http://www.twitter.com/#!/", "", $twitter_username);
-  $twitter_username = str_replace("https://www.twitter.com/#!/", "", $twitter_username);
-  //
-  $twitter_username = str_replace("http://twitter.com/", "", $twitter_username);
-  $twitter_username = str_replace("https://twitter.com/", "", $twitter_username);
-  //
-  $twitter_username = str_replace("http://www.twitter.com/", "", $twitter_username);
-  $twitter_username = str_replace("https://www.twitter.com/", "", $twitter_username);
-  //
-  $twitter_username = str_replace("http://twitter.com/intent/user?screen_name=", "", $twitter_username);
-  $twitter_username = str_replace("https://twitter.com/intent/user?screen_name=", "", $twitter_username);
-  //
-  $twitter_username = str_replace("/", "", $twitter_username);
-  
-  if (!strlen($twitter_username))
-    continue;
-  
-  $connection = new TwitterOAuth(
-                  CONSUMER_KEY
-                  , CONSUMER_SECRET
-                  , "551084002-hdE8gtFkI6Fp621qklGNPFNPa72T8IRfQaA9V46M"
-                  , "IHZGsEbn7E3b3YYYPAkXWNXHbf6TDytFqqSuvWbeb0"
-  );
+while ($rs->MoveNext() && $remaining_hits > 0) {
+    $twitter_username = $rs->GetItem("url");
+    $twitter_username = str_replace("http://twitter.com/#!/", "", $twitter_username);
+    $twitter_username = str_replace("https://twitter.com/#!/", "", $twitter_username);
+    //
+    $twitter_username = str_replace("http://www.twitter.com/#!/", "", $twitter_username);
+    $twitter_username = str_replace("https://www.twitter.com/#!/", "", $twitter_username);
+    //
+    $twitter_username = str_replace("http://twitter.com/", "", $twitter_username);
+    $twitter_username = str_replace("https://twitter.com/", "", $twitter_username);
+    //
+    $twitter_username = str_replace("http://www.twitter.com/", "", $twitter_username);
+    $twitter_username = str_replace("https://www.twitter.com/", "", $twitter_username);
+    //
+    $twitter_username = str_replace("http://twitter.com/intent/user?screen_name=", "", $twitter_username);
+    $twitter_username = str_replace("https://twitter.com/intent/user?screen_name=", "", $twitter_username);
+    //
+    $twitter_username = str_replace("/", "", $twitter_username);
 
-  $content = $connection->get("users/show", array(
-      "screen_name" => $twitter_username,
-      "include_entities" => "true"
-  ));
-  $remaining_hits--;
-  
-  if (!sizeof($content))
-    break;
+    if (!strlen($twitter_username))
+        continue;
+
+    $connection = new TwitterOAuth(
+                    CONSUMER_KEY
+                    , CONSUMER_SECRET
+                    , "551084002-hdE8gtFkI6Fp621qklGNPFNPa72T8IRfQaA9V46M"
+                    , "IHZGsEbn7E3b3YYYPAkXWNXHbf6TDytFqqSuvWbeb0"
+    );
+
+    $content = $connection->get("users/show", array(
+        "screen_name" => $twitter_username,
+        "include_entities" => "true"
+            ));
+    $remaining_hits--;
+
+    if (!sizeof($content))
+        break;
 
 //  print_r($content);
 //  die();
 
-  if (!isset($content->id))
-  {
-    if (isset($content->error))
-    {
-      $sql = "UPDATE scrape_url SET 
+    if (!isset($content->id)) {
+        if (isset($content->error)) {
+            $sql = "UPDATE scrape_url SET 
                 not_valid_twitter_url = 1
-                ,not_valid_twitter_url_error = '".mysql_real_escape_string(print_r($content, true))."' 
+                ,not_valid_twitter_url_error = '" . mysql_real_escape_string(print_r($content, true)) . "' 
               WHERE
-                id = ".$rs->GetItem("id").";";
-      $g_oConn->Execute($sql);
+                id = " . $rs->GetItem("id") . ";";
+            $g_oConn->Execute($sql);
+        }
+
+        print_r($content);
+        continue;
     }
-    
-    print_r($content);
-    continue;
-  }
-  
-  $sql = "REPLACE INTO scrape_url_twitter (
+
+    $sql = "REPLACE INTO scrape_url_twitter (
             scrape_url_id
             ,twitter_id
             ,name
@@ -144,8 +138,8 @@ while ($rs->MoveNext() && $remaining_hits > 0)
             ,listed_count
             ,saved_at
           ) VALUES (" .
-          $rs->GetItem("id") .
-          "," . intval($content->id) . "
+            $rs->GetItem("id") .
+            "," . intval($content->id) . "
           ,'" . mysql_real_escape_string($content->name) . "'
           ,'" . mysql_real_escape_string($content->screen_name) . "'
           ,'" . mysql_real_escape_string($content->location) . "'
@@ -169,10 +163,19 @@ while ($rs->MoveNext() && $remaining_hits > 0)
           ,'" . mysql_real_escape_string($content->listed_count) . "'
           ,NOW()
           );";
-  $g_oConn->Execute($sql);
-  
-  $i++;
-  echo "\rDone: ".$i.", [".$twitter_username."]                             \r";
+    $g_oConn->Execute($sql);
+
+    // set feed type to twitter
+    $sql = "UPDATE scrape_url SET 
+            not_valid_twitter_url = 1
+            ,not_valid_twitter_url_error = '" . mysql_real_escape_string(print_r($content, true)) . "' 
+            WHERE
+            id = " . $rs->GetItem("id") . ";";
+    $g_oConn->Execute($sql);
+
+
+    $i++;
+    echo "\rDone: " . $i . ", [" . $twitter_username . "]                             \r";
 }
 
 // release lock

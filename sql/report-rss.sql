@@ -1,10 +1,12 @@
 SELECT 
-	COALESCE(mc.name,'') AS 'Source Category' 
+	su.id
+	,COALESCE(mc.name,'') AS 'Source Category' 
 	,GROUP_CONCAT(DISTINCT mc.tag) AS 'Tags'	
+	
 	, mu.domain AS 'Source Domain' 
 	, mu.url AS 'Source URL' 
 	
-	, sc.name AS 'Feed Type'
+	, GROUP_CONCAT(DISTINCT sc.name) AS 'Feed Types'
 	, su.url AS 'Feed URL'
 	, su.title AS 'Feed Title'
 	
