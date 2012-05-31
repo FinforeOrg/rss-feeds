@@ -38,7 +38,7 @@ class CObject extends CList
 
         $delim = "";
         if (isset($_GET['f_id']) && intval($_GET['f_id']) > 0) {
-            $this->m_sFilter.= $delim . "h.id=" . intval($_GET['f_id']);
+            $this->m_sFilter.= $delim . "su.id=" . intval($_GET['f_id']);
             $delim = " and ";
         }
 
@@ -119,7 +119,7 @@ LEFT JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id
     ";
 
         $this->m_sTableName = 'scrape_url';
-        $this->m_sTitle = "RSS Feeds";
+        $this->m_sTitle = "All Feeds";
         $this->m_sActionURL = "rssfeeds.php";
         $this->m_sGroupBy = "su.id";
         $this->m_sOrderBy = "IF(ISNULL(mc.name),1,0), mc.name, mu.id";
@@ -165,7 +165,11 @@ else {
                         );
                         ?>
                     </td>
-                    <td class="span-2">
+                    <td class="span-7">
+                        <label>ID</label> <br />
+                        <input type="text" name="f_id" value="<?= isset($_GET['f_id']) ? $_GET['f_id'] : "" ?>" />
+                        <br />
+
                         <label>Query (world, continent, region, country)</label> <br />
                         <input type="text" name="f_q" id="f_q" value="<?php echo Get("f_q") ?>" class="span-7" /> <br />
                         Note: use "OR" to combine search terms

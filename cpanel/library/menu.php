@@ -34,7 +34,7 @@ $sysmenu = array(
         'rights' => ADMIN,
         'submenu' => array(
             'RSSFEEDS' => array(
-                'name' => "RSS Feeds",
+                'name' => "All Feeds",
                 'link' => "rssfeeds.php",
                 'rights' => ADMIN,
             ),
@@ -44,18 +44,30 @@ $sysmenu = array(
                 'rights' => ADMIN,
             ),
             'MAINCATEGORIES' => array(
-                'name' => "Main Categories",
+                'name' => "Categories",
                 'link' => "maincategories.php",
                 'rights' => ADMIN,
             ),
             'MAINURLS' => array(
-                'name' => "Main URLs",
+                'name' => "Source URLs",
                 'link' => "mainurls.php",
                 'rights' => ADMIN,
             ),
             'URLCATEGORIES' => array(
-                'name' => "URL Categories and Tags",
+                'name' => "Feed Categories and Tags",
                 'link' => "urlcategories.php",
+                'rights' => ADMIN,
+            ),
+        )
+    ),
+    'COUNTRYREGION' => array(
+        'name' => "Country/Region",
+        'link' => "countryregion.php",
+        'rights' => ADMIN,
+        'submenu' => array(
+            'COUNTRYREGION' => array(
+                'name' => "Country/Region",
+                'link' => "countryregion.php",
                 'rights' => ADMIN,
             ),
         )

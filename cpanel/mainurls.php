@@ -16,7 +16,7 @@ class CUsers extends CList
                 "Category"
                 , "category_id"
                 , "category_name"
-                , "SELECT id AS `value`, `name` AS `text` FROM main_category ORDER BY id ASC"
+                , "SELECT id AS `value`, `name` AS `text` FROM main_category ORDER BY name ASC"
                 , CT_COMBO, CL_VIEW_GRID | CL_VIEW_EDIT, false
         );
 
@@ -42,7 +42,7 @@ LEFT JOIN main_category mc ON mc.id = mu.category_id";
         $this->m_sCountSQL = "SELECT COUNT(*) FROM main_url";
 
         $this->m_sTableName = 'main_url';
-        $this->m_sTitle = "Main URLs";
+        $this->m_sTitle = "Source URLs";
         $this->m_sActionURL = "mainurls.php";
         $this->m_sOrderBy = "id";
         $this->m_nPageSize = 50;
@@ -56,6 +56,24 @@ LEFT JOIN main_category mc ON mc.id = mu.category_id";
         }
 
         return $value;
+    }
+    
+    function OnUpdate()
+    {
+        global $g_oConn;
+        
+        parent::OnUpdate();
+        
+        $id = intval(Post("id"));
+        
+        $sql = "UPDATE scrape_url_category suc
+                INNER JOIN scrape_url su ON su.id = suc.scrape_url_id
+                INNER JOIN main_url mu ON mu.id = su.url_id
+                SET suc.main_category_id = mu.category_id
+                WHERE
+                    mu.id = ".intval($id);
+        
+        $g_oConn->Execute($sql);
     }
 
 }

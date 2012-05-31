@@ -86,7 +86,7 @@ function FillCheckbox($sql, $values = array(), $cols = 0, $name, $id = "chkbox")
     $rs = $g_oConn->Execute($sql);
     $cnt = mysql_num_rows($rs);
 
-    echo "<table width='100%' border='0'><tr>";
+    echo "<table border='0'><tr>";
     while (($row = mysql_fetch_row($rs)) != FALSE) {
         $checked = in_array(intval($row[0]), $values) ? "checked" : "";
         echo "<td nowrap width='" . (round(100 / $cols)) . "%'>";

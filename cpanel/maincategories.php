@@ -24,7 +24,7 @@ class CUsers extends CList
         $this->m_sCountSQL = "SELECT COUNT(*) FROM main_category";
 
         $this->m_sTableName = 'main_category';
-        $this->m_sTitle = "Main Categories";
+        $this->m_sTitle = "Categories";
         $this->m_sActionURL = "maincategories.php";
         $this->m_sOrderBy = "name";
         $this->m_nPageSize = 50;

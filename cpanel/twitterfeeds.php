@@ -9,14 +9,7 @@ class CObject extends CList
     {
         global $_GET, $_COOKIE;
 
-//        $this->AddColumn("ID", 'id', CL_VIEW_GRID | CL_VIEW_READONLYEDIT);
-//        $this->AddColumn("Source Category", 'source_category', CL_VIEW_GRID);
-//        $this->AddColumn("Tags", 'tags', CL_VIEW_GRID);
-//        $this->AddColumn("Source Domain", 'source_domain', CL_VIEW_GRID);
-//        $this->AddColumn("Source URL", 'source_url', CL_VIEW_GRID);
-//        $this->AddColumn("Feed Type", 'feed_type', CL_VIEW_GRID);
-//        $this->AddColumn("Feed Title", 'feed_title', CL_VIEW_GRID);
-
+        $this->AddColumn("Feed ID", 'id', CL_VIEW_GRID | CL_VIEW_READONLYEDIT);
         $this->AddColumn("Feed URL", 'feed_url', CL_VIEW_GRID);
 
         $this->AddColumn("Twitter ID", 'twitter_id', CL_VIEW_GRID);
@@ -102,7 +95,7 @@ INNER JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id";
 	INNER JOIN scrape_category sc ON sc.id = suc.scrape_category_id
 	LEFT JOIN main_url mu ON mu.id = su.url_id
 	LEFT JOIN main_category mc ON mc.id = suc.main_category_id
-	LEFT JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id";
+	INNER JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id";
 
         $this->m_sTableName = 'scrape_url';
         $this->m_sTitle = "Twitter Feeds";
@@ -110,7 +103,7 @@ INNER JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id";
         $this->m_sGroupBy = "su.id";
         $this->m_sOrderBy = "IF(ISNULL(mc.name),1,0), mc.name, mu.id";
         $this->m_nPageSize = 50;
-//    $this->m_nOperation = OP_EDIT | OP_ADD;
+    $this->m_nOperation = 0;
     }
 
     function GetCellEntry($dbname, $value, &$rs, $column)
@@ -137,7 +130,11 @@ else {
             <table>
                 <tr>
                     <td class="span-2">
-                        <label>Name</label> <br />
+                        <label>Feed ID</label> <br />
+                        <input type="text" name="f_id" value="<?= isset($_GET['f_id']) ? $_GET['f_id'] : "" ?>" />
+                    </td>
+                    <td class="span-2">
+                        <label>Twitter Name</label> <br />
                         <input type="text" name="f_name" value="<?= isset($_GET['f_name']) ? $_GET['f_name'] : "" ?>" />
                     </td>
                     <td>

@@ -30,7 +30,6 @@ INNER JOIN country_region cr3 ON cr2.id = cr3.parent_region_id AND cr3.other_reg
 INNER JOIN country_region cr4 ON cr3.id = cr4.parent_region_id AND cr4.other_region = 0
 # Other Region
 LEFT JOIN country_region cr3_other ON cr3.name = cr3_other.name AND cr3_other.other_region = 1
-WHERE
-	cr1.other_region = 0
+
 ORDER BY
 	cr4.name;
