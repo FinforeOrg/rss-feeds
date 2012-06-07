@@ -72,6 +72,18 @@ $sysmenu = array(
             ),
         )
     ),
+    'SECTORINDUSTRY' => array(
+        'name' => "Sector/Industry",
+        'link' => "sectorindustry.php",
+        'rights' => ADMIN,
+        'submenu' => array(
+            'SECTORINDUSTRY' => array(
+                'name' => "Sector/Industry",
+                'link' => "sectorindustry.php",
+                'rights' => ADMIN,
+            ),
+        )
+    ),
     'ADMINMANAGEMENT' => array(
         'name' => "Administrators",
         'link' => "admins.php",
