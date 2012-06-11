@@ -3,6 +3,12 @@ SELECT
 	,si2.name AS 'Supersector'
 	,si3.name AS 'Sector'
 	,si4.name AS 'Subsector'
+	
+	,si1.code AS 'Industry Code'
+	,si2.code AS 'Supersector Code'
+	,si3.code AS 'Sector Code'
+	,si4.code AS 'Subsector Code'
+	
 	,si4.definition AS 'Definition'
 FROM sector_industry si1
 INNER JOIN sector_industry si2 ON si1.id = si2.parent_id AND si2.level = 2

@@ -16,6 +16,10 @@ class CUsers extends CList
         $this->AddColumn("Supersector", 'Supersector', CL_VIEW_GRID);
         $this->AddColumn("Sector", 'Sector', CL_VIEW_GRID);
         $this->AddColumn("Subsector", 'Subsector', CL_VIEW_GRID);
+        $this->AddColumn("Industry Code", 'Industry Code', CL_VIEW_GRID);
+        $this->AddColumn("Supersector Code", 'Supersector Code', CL_VIEW_GRID);
+        $this->AddColumn("Sector Code", 'Sector Code', CL_VIEW_GRID);
+        $this->AddColumn("Subsector Code", 'Subsector Code', CL_VIEW_GRID);
         $this->AddColumn("Definition", 'Definition', CL_VIEW_GRID);
 
         $delim = "";
@@ -39,6 +43,12 @@ class CUsers extends CList
 	,si2.name AS 'Supersector'
 	,si3.name AS 'Sector'
 	,si4.name AS 'Subsector'
+
+	,si1.code AS 'Industry Code'
+	,si2.code AS 'Supersector Code'
+	,si3.code AS 'Sector Code'
+	,si4.code AS 'Subsector Code'
+
 	,si4.definition AS 'Definition'
 FROM sector_industry si1
 INNER JOIN sector_industry si2 ON si1.id = si2.parent_id AND si2.level = 2
@@ -72,6 +82,10 @@ INNER JOIN sector_industry si4 ON si3.id = si4.parent_id AND si4.level = 4";
                 else
                     $value = "&vellip;";
             }
+        }
+        
+        if (in_array($dbname, array("Industry Code", "Supersector Code", "Sector Code", "Subsector Code"))) {
+            return str_pad($value, 4, "0", STR_PAD_LEFT);
         }
 
         return $value;

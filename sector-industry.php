@@ -21,6 +21,7 @@ for ($row = 3; $row <= $data->rowcount(); $row++) {
         $val = trim($data->val($row, $col));
 
         $name = "";
+        $code = 0;
         $definition = "";
 
         // first column
@@ -39,10 +40,14 @@ for ($row = 3; $row <= $data->rowcount(); $row++) {
 
         // insert
         if ($col != 5 && strlen($name)) {
-            $parent_id = intval($g_oConn->GetValue("SELECT id FROM sector_industry WHERE `name` = '" . mysql_real_escape_string($name) . "';"));
+            $code = substr($name, 0, 4);
+            $name = trim(substr($name, 4));
+//            $parent_id = intval($g_oConn->GetValue("SELECT id FROM sector_industry WHERE `name` = '" . mysql_real_escape_string($name) . "';"));
+            $parent_id = intval($g_oConn->GetValue("SELECT id FROM sector_industry WHERE `code` = " . intval($code) . ";"));
             if (!$parent_id) {
-                $sql = "INSERT INTO sector_industry (`name`,definition,parent_id,`level`) VALUES (
+                $sql = "INSERT INTO sector_industry (`name`,`code`,definition,parent_id,`level`) VALUES (
                   '" . mysql_real_escape_string($name) . "'
+                  ," . intval($code) . "
                   ,'" . mysql_real_escape_string($definition) . "'
                   ," . (isset($level_parent[$level - 1]) ? $level_parent[$level - 1] : 0) . "
                   ," . intval($level) . "
