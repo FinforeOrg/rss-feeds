@@ -70,6 +70,11 @@ $sysmenu = array(
                 'link' => "countryregion.php",
                 'rights' => ADMIN,
             ),
+            'COUNTRYREGIONALT' => array(
+                'name' => "Country/Region Alternative Names",
+                'link' => "countryregion-alt-names.php",
+                'rights' => ADMIN,
+            ),
         )
     ),
     'SECTORINDUSTRY' => array(

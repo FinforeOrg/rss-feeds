@@ -10,11 +10,12 @@ class CUsers extends CList
         global $_GET, $_COOKIE, $g_oConn;
 
         $this->AddColumn("Country (UN)", 'country', CL_VIEW_GRID);
+        $this->AddColumn("Country - Alternative Names", 'country_alt_names', CL_VIEW_GRID);
         $this->AddColumn("World (UN)", 'world', CL_VIEW_GRID);
         $this->AddColumn("Continent (UN)", 'continent', CL_VIEW_GRID);
         $this->AddColumn("Region (UN)", 'region', CL_VIEW_GRID);
         $this->AddColumn("Other Region (UN)", 'other_region', CL_VIEW_GRID);
-        $this->AddColumn("Country Code (ISO)", 'country_code', CL_VIEW_GRID);
+        $this->AddColumn("Country Code (ISO)", 'iso_country_code', CL_VIEW_GRID);
         $this->AddColumn("World Code", 'world_code', CL_VIEW_GRID);
         $this->AddColumn("Continent Code", 'continent_code', CL_VIEW_GRID);
         $this->AddColumn("Region Code", 'region_code', CL_VIEW_GRID);
@@ -61,11 +62,12 @@ EOT;
 
         $this->m_sSelectSQL = "SELECT 
 	cr4.name AS country
+	,GROUP_CONCAT(DISTINCT cr4an.name ORDER BY cr4an.name SEPARATOR '<br />') AS country_alt_names
 	,cr1.name AS world
 	,cr2.name AS continent
 	,cr3.name AS region
 	,cr3_other.name AS other_region
-	,cr4.iso_country_code AS country_code
+	,cr4.iso_country_code AS iso_country_code
 
 	
 	,cr1.code AS world_code
@@ -91,6 +93,9 @@ INNER JOIN country_region cr3 ON cr2.id = cr3.parent_region_id AND cr3.other_reg
 INNER JOIN country_region cr4 ON cr3.id = cr4.parent_region_id AND cr4.other_region = 0
 # Other Region
 LEFT JOIN country_region cr3_other ON cr3.name = cr3_other.name AND cr3_other.other_region = 1
+# Country Alt Names
+LEFT JOIN country_region_alt_names cr4an ON cr4.code = cr4an.country_region_code
+
 -- WHERE cr1.other_region = 0
 ";
 
@@ -111,14 +116,18 @@ LEFT JOIN country_region cr3_other ON cr3.name = cr3_other.name AND cr3_other.ot
         $this->m_sTitle = "Country/Region";
         $this->m_sActionURL = "countryregion.php";
         $this->m_sOrderBy = "cr4.name";
+        $this->m_sGroupBy = "cr4.id";
         $this->m_nOperation = 0;
         $this->m_nPageSize = 250;
     }
 
     function GetCellEntry($dbname, $value, &$rs, $column)
     {
-        if ($dbname == "") {
-            $value = "";
+        if ($dbname == "country_alt_names") {
+            $value =<<<EOF
+{$value}
+<a href="countryregion-alt-names.php?f_code={$rs->GetItem("country_code")}"><img src="images/edit.gif" alt="" title="Edit" /></a>
+EOF;
         }
 
         return $value;
