@@ -1,10 +1,12 @@
 SELECT 
 	COALESCE(mc.name,'') AS 'Source Category' 
+	,GROUP_CONCAT(DISTINCT COALESCE(mc.name,'')) AS source_categories
 	,GROUP_CONCAT(DISTINCT mc.tag) AS 'Tags'	
+	
 	, mu.domain AS 'Source Domain' 
 	, mu.url AS 'Source URL' 
 	
-	, sc.name AS 'Feed Type'
+	, GROUP_CONCAT(DISTINCT sc.name) AS 'Feed Types'
 	, su.url AS 'Feed URL'
 	, su.title AS 'Feed Title'
 	
@@ -36,7 +38,7 @@ INNER JOIN scrape_url_category suc ON suc.scrape_url_id = su.id
 INNER JOIN scrape_category sc ON sc.id = suc.scrape_category_id
 LEFT JOIN main_url mu ON mu.id = su.url_id
 LEFT JOIN main_category mc ON mc.id = suc.main_category_id
-LEFT JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id
+INNER JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id
 GROUP BY su.id
 ORDER BY 
 	IF(ISNULL(mc.name),1,0)

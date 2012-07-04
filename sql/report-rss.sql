@@ -1,6 +1,6 @@
 SELECT 
-	su.id
-	,COALESCE(mc.name,'') AS 'Source Category' 
+	-- su.id,
+	COALESCE(mc.name,'') AS 'Source Category' 
 	,GROUP_CONCAT(DISTINCT COALESCE(mc.name,'')) AS source_categories
 	,GROUP_CONCAT(DISTINCT mc.tag) AS 'Tags'	
 	
@@ -40,6 +40,7 @@ INNER JOIN scrape_category sc ON sc.id = suc.scrape_category_id
 LEFT JOIN main_url mu ON mu.id = su.url_id
 LEFT JOIN main_category mc ON mc.id = suc.main_category_id
 LEFT JOIN scrape_url_twitter sut ON sut.scrape_url_id = su.id
+-- where	sc.id = 1
 GROUP BY su.id
 ORDER BY 
 	IF(ISNULL(mc.name),1,0)
