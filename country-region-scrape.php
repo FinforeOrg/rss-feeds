@@ -126,6 +126,14 @@ $sql = "INSERT INTO country_region (code, name, parent_region_id, developed_deve
         ";";
 $g_oConn->Execute($sql);
 
+# Manually insert Regions for countries not listed
+# NB: start from code 10000 and above
+// Taiwan, parent is China
+$sql = "INSERT INTO country_region (code, name, parent_region_id, developed_developing_region, other_region) VALUES " .
+        " (" . intval('10000') . ",'" . mysql_real_escape_string('Taiwan') . "'" . "," . intval(16) . "" . ",NULL" . ", 0)" .
+        ";";
+$g_oConn->Execute($sql);
+
 ################################################################################
 # Geographical region and composition of each region
 ################################################################################
@@ -332,6 +340,7 @@ $UN_TO_ISO = array(
     , "Saint Martin (French part)" => "SAINT MARTIN (FRENCH PART)"
     , "Saint-Barthélemy" => "SAINT BARTHÉLEMY"
     , "Sint Maarten (Dutch part)" => "SINT MAARTEN (DUTCH PART)"
+    , "Taiwan" => "TAIWAN, PROVINCE OF CHINA"
 );
 
 $ISO_TO_UN = array_flip($UN_TO_ISO);
@@ -361,16 +370,16 @@ $html = str_get_html($html);
 
 
 foreach ($html->find("table.sortable tr") as $tr) {
-    if (!sizeof($tr->find("td", 2)))
+    if (!sizeof($tr->find("td", 0)))
         continue;
 
-    $country_name = $tr->find("td", 0)->plaintext;
+    $country_name = $tr->find("td", 1)->plaintext;
     $country_name = preg_replace("/\d*/si", "", $country_name);
     $country_name = preg_replace("/\s+/si", " ", $country_name);
     $country_name = trim($country_name);
     $country_name = isset($ISO_TO_UN[$country_name]) ? $ISO_TO_UN[$country_name] : $country_name;
 
-    $country_code = $tr->find("td", 2)->plaintext;
+    $country_code = $tr->find("td", 0)->plaintext;
 
     echo "\n$country_name";
 
